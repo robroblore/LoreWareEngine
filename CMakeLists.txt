@@ -8,11 +8,12 @@ add_executable(${PROJECT_NAME}
         main.cpp
         callbacks.h
         Utilities.h
-        vertex.h
-        rendering/OpenGlLoader.h
-        rendering/OpenGlDraw.h
+        rendering/GL/Draw.h
         Input.h
-        rendering/GLSLShaderLoader.h)
+        rendering/GL/ShaderLoader.h
+        rendering/GL/MeshLoader.h
+        rendering/GL/DrawDetails.h
+        rendering/GL/QueryAttribs.h)
 
 
 include_directories(Dependencies)

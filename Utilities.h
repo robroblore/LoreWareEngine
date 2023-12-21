@@ -4,7 +4,7 @@
 
 static void write_log(const char* s){
     std::ofstream logs;
-    printf("Log created");
+//    printf("Log created\n");
     logs.open("logs.lore", std::ofstream::app | std::ofstream::out);
     logs << std::chrono::system_clock::now() << " " << s << "\n";
     logs.close();
