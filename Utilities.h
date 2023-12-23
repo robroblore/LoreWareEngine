@@ -31,3 +31,12 @@ void logGLinfo(){
     write_log("GLSL Version : ");
     write_log(reinterpret_cast<const char *>(glslVersion));
 }
+
+inline std::string ReadToString(const char* filepath){
+    std::ifstream input_file_stream(filepath);
+    if (!input_file_stream.is_open())
+        throw("invalid file path");
+    std::stringstream data_stream;
+    data_stream << input_file_stream.rdbuf();
+    return data_stream.str();
+}

@@ -5,10 +5,13 @@
 #include "rendering/GL/DrawDetails.h"
 #include "rendering/GL/Draw.h"
 #include "rendering/GL/MeshLoader.h"
-#include "rendering/GL/QueryAttribs.h"
+#include "rendering/GL/QueryShader.h"
 #include "rendering/GL/ShaderLoader.h"
 #include "Input.h"
 #include <random>
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
+
 
 int main(int argc, char** argv)
 {
@@ -33,25 +36,9 @@ int main(int argc, char** argv)
     glfwSetWindowCloseCallback(window, glfw_window_close_callback);
 
     //Shader Programs
-    const char* vertshader =
-            "#version 460 core \n"
-            "layout(location = 0) in vec3 vertPos; \n"
-            "layout(location = 1) in vec3 vertColor; \n"
-            "layout(location = 0) out vec4 fragColor; \n"
-            "void main(){ \n"
-            "  fragColor = vec4(vertColor, 1.0); \n"
-            "  gl_Position = vec4(vertPos, 1.0); \n"
-            "}";
-
-    const char* fragshader =
-            "#version 460 core \n"
-            "layout(location = 0) in vec4 fragColor; \n"
-            "out vec4 color; \n"
-            "void main(){ \n"
-            "color = fragColor; \n"
-            "}";
-
-    unsigned int mainShader = LoadShader(vertshader, fragshader);
+    std::string vertshader = ReadToString("../shaders/VertexShader.glsl");
+    std::string fragshader = ReadToString("../shaders/FragmentShader.glsl");
+    unsigned int mainShader = LoadShader(vertshader.c_str(), fragshader.c_str());
 
     //Draw buffers
     glClearColor(.53f, .81f, .92f, 1.f);
@@ -106,13 +93,24 @@ int main(int argc, char** argv)
         Penis.push_back(UploadMesh(posData, colorData, sizeof(posData) / sizeof(posData[0]), elems, sizeof(elems) / sizeof(elems[0])));
     }
 
-//    QueryAttribs(Balls.back().vao);
+    QueryInputAttribsAndUniforms(mainShader);
+
     /* Loop until the user closes the window */
+    double prev_time = glfwGetTime();
     while(!glfwWindowShouldClose(window)){
+        double current_time = glfwGetTime();
+        double deltaTime = current_time - prev_time;
+        prev_time = current_time;
         ProcessInput(window);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(mainShader);
+        glm::mat4 finalModelMatrix = glm::mat4(1);
+        finalModelMatrix = glm::translate(finalModelMatrix, glm::vec3(sin((float)glfwGetTime()) / 2, cos((float)glfwGetTime()) / 2, 0));
+        finalModelMatrix = glm::rotate(finalModelMatrix, (float)glfwGetTime(), glm::vec3(0.f, 1.f, 0.f));
+        finalModelMatrix = glm::scale(finalModelMatrix, glm::vec3(.5));
+        GLuint location = glGetUniformLocation(mainShader, "uModelMatrix");
+        glUniformMatrix4fv(location, 1, GL_FALSE, &finalModelMatrix[0][0]);
         Draw(Balls);
 
         Draw(Penis);

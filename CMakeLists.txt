@@ -13,7 +13,7 @@ add_executable(${PROJECT_NAME}
         rendering/GL/ShaderLoader.h
         rendering/GL/MeshLoader.h
         rendering/GL/DrawDetails.h
-        rendering/GL/QueryAttribs.h)
+        rendering/GL/QueryShader.h)
 
 
 include_directories(Dependencies)
@@ -25,8 +25,15 @@ set_target_properties(glfw PROPERTIES
 target_link_libraries(${PROJECT_NAME} glfw)
 
 find_package(OpenGL REQUIRED)
-
 target_link_libraries(Game_Engine OpenGL::GL)
+
+
+set(glm_DIR Dependencies/glm/cmake/glm)
+find_package(glm REQUIRED)
+include_directories(${glm_INCLUDE_DIRS})
+link_directories(${glm_LIBRARY_DIRS})
+add_definitions(${glm_DEFINITIONS})
+
 
 add_library(glad Dependencies/glad/glad.c)
 target_link_libraries(${PROJECT_NAME} glad)
