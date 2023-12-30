@@ -11,6 +11,7 @@
 #include <random>
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/matrix_transform.hpp>
+#include <windows.h>
 
 
 int main(int argc, char** argv)
@@ -97,6 +98,10 @@ int main(int argc, char** argv)
 
     /* Loop until the user closes the window */
     double prev_time = glfwGetTime();
+    float x = 0;
+    float y = 0;
+    float dx = 0.001f;
+    float dy = 0.002f;
     while(!glfwWindowShouldClose(window)){
         double current_time = glfwGetTime();
         double deltaTime = current_time - prev_time;
@@ -106,9 +111,20 @@ int main(int argc, char** argv)
 
         glUseProgram(mainShader);
         glm::mat4 finalModelMatrix = glm::mat4(1);
-        finalModelMatrix = glm::translate(finalModelMatrix, glm::vec3(sin((float)glfwGetTime()) / 2, cos((float)glfwGetTime()) / 2, 0));
-        finalModelMatrix = glm::rotate(finalModelMatrix, (float)glfwGetTime(), glm::vec3(0.f, 1.f, 0.f));
-        finalModelMatrix = glm::scale(finalModelMatrix, glm::vec3(.5));
+        finalModelMatrix = glm::translate(finalModelMatrix, glm::vec3(x, y, 0));
+        x += dx;
+        y += dy;
+
+        if(x > 1.15f || x < -0.22f) dx = -dx;
+        if(y > .7f || y < -0.1f) dy = -dy;
+        printf("x=%f\n", x);
+        printf("dx=%f\n", dx);
+        printf("y=%f\n", y);
+        printf("dy=%f\n", dy);
+
+//        finalModelMatrix = glm::translate(finalModelMatrix, glm::vec3(sin((float)glfwGetTime()) / 3, cos((float)glfwGetTime()) / 1.5 + .25, 0));
+//        finalModelMatrix = glm::rotate(finalModelMatrix, (float)glfwGetTime(), glm::vec3(.5f, 1.f, .33f));
+//        finalModelMatrix = glm::scale(finalModelMatrix, glm::vec3(.5));
         GLuint location = glGetUniformLocation(mainShader, "uModelMatrix");
         glUniformMatrix4fv(location, 1, GL_FALSE, &finalModelMatrix[0][0]);
         Draw(Balls);
